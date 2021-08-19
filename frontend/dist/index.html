@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <style>
+      .droparea {
+        background-color: black;
+        height: 300px;
+      }
+      body {
+        background-color: aqua;
+      }
+      .hoverover {
+        background-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div
+        class="droparea"
+        v-bind:class="{hoverover: hoverover}"
+        @drop.prevent="drop"
+        @dragenter.prevent="dragEnter"
+        @dragleave.prevent="dragLeave"
+        @dragover.prevent
+      ></div>
+    </div>
+  </body>
+  <script src="main.js"></script>
+</html>
