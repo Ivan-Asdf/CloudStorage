@@ -13,8 +13,14 @@ import (
 type myHandler struct{}
 
 func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// fmt.Println("Request received")
-	defer r.Body.Close()
+	fmt.Println("Request received")
+	// buffer := make([]byte, 1000*1000+100)
+	// for {
+	// 	_, err := r.Body.Read(buffer)
+	// 	if err != nil {
+	// 		break
+	// 	}
+	// }
 
 	reader, _ := r.MultipartReader()
 	for {
@@ -24,6 +30,7 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			} else {
 				fmt.Println("ERROR NextPart", err)
+				break
 			}
 		}
 
@@ -31,11 +38,12 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		createDir(fileName)
 
 		bytes, err := ioutil.ReadAll(part)
-		writeFile(fileName, bytes)
+		part.Close()
+		writeFile("upload/"+fileName, bytes)
 	}
 
 	writeCors(w)
-	// fmt.Println("Request proccesses")
+	fmt.Println("Request proccesses")
 }
 
 func writeFile(fileName string, bytes []byte) {
@@ -51,14 +59,16 @@ func writeFile(fileName string, bytes []byte) {
 	} else if n != len(bytes) {
 		fmt.Println("ERROR: did not write entire buffer to file")
 	}
+	fmt.Println("Wrote to file", fileName)
 }
 
 func createDir(path string) {
+	os.MkdirAll("upload", 0744)
 	re := regexp.MustCompile(`(.+)/([^/]+)`)
 	matches := re.FindStringSubmatch(path)
-	fmt.Println("Matches", matches)
+	// fmt.Println("Matches", matches)
 	if len(matches) > 2 {
-		err := os.MkdirAll(matches[1], 0744)
+		err := os.MkdirAll("upload/"+matches[1], 0744)
 		if err != nil {
 			fmt.Println(err)
 		}

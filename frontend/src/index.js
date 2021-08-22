@@ -1,5 +1,5 @@
 import * as Vue from "vue";
-
+import axios from "axios";
 import uploadFiles from "./files.js";
 
 const Counter = {
@@ -18,6 +18,8 @@ const Counter = {
       this.hoverover = false;
     },
     drop(e) {
+      e.preventDefault();
+      e.stopPropagation();
       this.hoverover = false;
       console.log("drop happened");
 
@@ -27,10 +29,67 @@ const Counter = {
       getFileList(dataTransferItems).then((files) => {
         console.log("Main files", files);
         uploadFiles(files);
+        // wrapper(files);
       });
     },
   },
 };
+
+const requestSize = 1000 * 1000 * 200;
+let formData = new FormData();
+let currentSize = 0;
+let i = 0;
+
+async function wrapper(files) {
+  const file = files.pop();
+  if (file == undefined) {
+    console.log("FINAL FILE UPLOADED");
+    return;
+  }
+
+  let fileName = file.name;
+  if (file.webkitRelativePath) fileName = file.webkitRelativePath;
+
+  if (file.size > 1000 * 1000 * 20) {
+    console.log(`BIG${file.size}`);
+    const formDataBig = new FormData();
+    formDataBig.append(fileName, file);
+    i++;
+    console.log(`REQUEST ${i}`);
+    await sendRequest(formDataBig, i);
+    console.log(`RESPONSE ${i}`);
+    setTimeout(wrapper, 50, files);
+  }
+
+  currentSize += file.size;
+  // console
+  //   .log
+  //   // `Add, ${file.name}, ${file.size}, Current, ${currentSize}, FileCount ${files.length}`
+  //   ();
+  formData.append(fileName, file);
+  if (currentSize > requestSize) {
+    i++;
+    console.log(`REQUEST ${i}`);
+    await sendRequest(formData, i);
+    console.log(`RESPONSE ${i}`);
+    formData = new FormData();
+    currentSize = 0;
+  }
+  if (files.length > 0) setTimeout(wrapper, 0, files);
+  else if (currentSize > 0) {
+    console.log("SENDING LAST REQUEST");
+    sendRequest(formData);
+  }
+}
+
+async function sendRequest(formData, x) {
+  await axios
+    .post(`http://localhost:6969/upload`, formData)
+    // .then(() => console.log("REQUEST FINISHED", x))
+    .catch((e) => {
+      console.log(e);
+    });
+}
 
 async function getFileList(dataTransferItems) {
   const files = [];
