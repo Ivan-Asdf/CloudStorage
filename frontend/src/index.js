@@ -6,6 +6,8 @@ const Counter = {
   data() {
     return {
       hoverover: false,
+      current: 0,
+      max: 0,
     };
   },
   methods: {
@@ -28,12 +30,19 @@ const Counter = {
       // console.log(dataTransferItems[0].webkitGetAsEntry().filesystem);
       getFileList(dataTransferItems).then((files) => {
         console.log("Main files", files);
+        this.max = getFilesSize(files);
         uploadFiles(files);
         // wrapper(files);
       });
     },
   },
 };
+
+function getFilesSize(files) {
+  let size = 0;
+  files.forEach((file) => (size += file.size));
+  return size;
+}
 
 async function getFileList(dataTransferItems) {
   const files = [];
@@ -42,9 +51,7 @@ async function getFileList(dataTransferItems) {
     const fileSystemEntry = dataTransferItem.webkitGetAsEntry();
     promises.push(traverseFileSystem(files, fileSystemEntry));
   }
-  console.log("START WAITING");
   await Promise.all(promises);
-  console.log("DONE WAITING");
   return files;
 }
 
