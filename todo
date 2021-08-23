@@ -1,0 +1,32 @@
+1000 async 7:30
+1000 sync 11
+2000 async 10
+2000 async no-log-view 6:59
+1000 async no-log-view 7min
+
+
+TODO NOW:
+    Test:
+        FormData size and Axios/Fetch
+        BIGFILE 4-20GB
+            probably gotta chunk it
+    Refactor:
+        the whole ting
+
+
+TODO features:
+    Add gui progress bar
+    Add users
+        Initially just folder for users
+    Add browsing view
+        Add upload at browsed folder
+        Add "are you sure want to replace". Requires prefligh
+    Add download
+
+TODO test:
+    validation of data?!?!
+
+
+Achievments:
+    The backup works with big folders with alot of files
+    Runs in Web Worker not the UI is 100% smooth
