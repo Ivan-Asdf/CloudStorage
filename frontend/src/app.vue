@@ -111,19 +111,21 @@ export default {
   overflow: scroll;
   display: grid;
   grid-template-columns: repeat(10, 1fr);
+  border: 3px solid;
+  padding: 10px;
 }
 
 .file {
   height: 100px;
   width: 100px;
-  /* background-image: url(text-x-generic.svg); */
+  background-image: url(assets/text-x-generic.svg);
   background-size: cover;
 }
 
 .dir {
   height: 100px;
   width: 100px;
-  /* background-image: url(folder-blue.svg); */
+  background-image: url(assets/folder-blue.svg);
   background-size: cover;
 }
 

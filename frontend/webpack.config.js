@@ -1,5 +1,7 @@
 const webpack = require("webpack");
+const path = require("path");
 const { VueLoaderPlugin } = require("vue-loader");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   devServer: {
@@ -18,6 +20,10 @@ module.exports = {
       __VUE_PROD_DEVTOOLS__: false,
     }),
     new VueLoaderPlugin(),
+    new HtmlWebpackPlugin({
+      title: "Output Management",
+      template: "src/html/index.html",
+    }),
   ],
   module: {
     rules: [
@@ -28,6 +34,10 @@ module.exports = {
       {
         test: /\.css$/,
         use: ["vue-style-loader", "css-loader"],
+      },
+      {
+        test: /\.html$/i,
+        loader: "html-loader",
       },
     ],
   },
