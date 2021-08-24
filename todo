@@ -13,7 +13,6 @@ PotentialBugs&ExistingBugs:
 
 TODO NOW:
     Standartize the getting size procedure
-    Make text appear bottom of file
     Make browse view refrest after upload
 
 TODO features:
@@ -33,4 +32,4 @@ Achievments:
 
 BigHurdles:
     There is a memory leak on firefox. Its seems to be firefox`s falt, it seems to also
-    happen when uploading file in google drive.
+        happen when uploading file in google drive.

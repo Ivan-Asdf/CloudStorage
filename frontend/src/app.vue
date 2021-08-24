@@ -9,8 +9,15 @@
     @dragleave.prevent="dragLeave"
     @dragover.prevent
   >
-    <div v-for="file in files" :key="file.name">
-      <div :class="file.type" @click="onClick">{{ file.name }}</div>
+    <div
+      class="filebox"
+      v-for="file in files"
+      :key="file.name"
+      :filename="file.name"
+      @click.stop="onClick"
+    >
+      <div :class="file.type"></div>
+      <p>{{ file.name }}</p>
     </div>
   </div>
   <div id="progress">
@@ -26,8 +33,6 @@ import axios from "axios";
 
 import { uploadFiles, getFileList } from "./files.js";
 import { getFilesSize } from "./utils.js";
-
-// import folder from "./assets/folder-blue.svg";
 
 export default {
   data() {
@@ -76,9 +81,8 @@ export default {
     },
 
     onClick(e) {
-      const fileName = e.target.textContent;
+      const fileName = e.currentTarget.getAttribute("filename");
       this.root += "/" + fileName;
-      console.log("FILE CLICKED", fileName);
       this.refreshBrowsingView();
     },
 
@@ -105,6 +109,10 @@ export default {
 </script>
 
 <style>
+body {
+  font-family: Arial;
+  font-size: 20px;
+}
 .droparea {
   background-color: white;
   height: 300px;
@@ -115,18 +123,41 @@ export default {
   padding: 10px;
 }
 
-.file {
-  height: 100px;
+.filebox {
+  height: 115px;
   width: 100px;
+  /* border: 1px solid; */
+  overflow: hidden;
+  align-items: center;
+}
+
+.filebox div {
+  width: 90px;
+  height: 66px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin: auto;
+  /* border: 1px solid; */
+}
+
+.file {
   background-image: url(assets/text-x-generic.svg);
-  background-size: cover;
 }
 
 .dir {
-  height: 100px;
-  width: 100px;
   background-image: url(assets/folder-blue.svg);
-  background-size: cover;
+}
+
+.filebox p {
+  text-align: center;
+  font-size: 0.7em;
+  margin: 0;
+  width: 80px;
+  /* border: 1px solid; */
+  overflow: hidden;
+  word-wrap: break-word;
+  margin: auto;
 }
 
 body {
