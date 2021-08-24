@@ -4,31 +4,39 @@ self.addEventListener("message", function (e) {
   e.preventDefault();
   e.stopPropagation();
   const files = e.data;
-  wrapper(files);
+  distributeToWorker(files);
 });
 
-const smallFilesWorker = new Worker(new URL("./uploader.js", import.meta.url));
+const uploadWorker = new Worker(new URL("./uploader.js", import.meta.url));
+let uploadWorkerDone = false;
 
-smallFilesWorker.onmessage = (e) => {
+uploadWorker.onmessage = (e) => {
   const msg = e.data;
+  if (msg === "done") uploadWorkerDone = true;
+  else if (msg === "working") {
+  } else {
+    // console.log(msg);
+    // console.log("distrubuter sent size", { type: "size", size: msg });
+    postMessage({ type: "size", size: msg });
+  }
 };
 
 let currentSize = 0;
 let smallFiles = [];
 
-async function wrapper(files) {
+async function distributeToWorker(files) {
   const file = files.pop();
   if (file == undefined) {
     if (currentSize > 0) {
-      smallFilesWorker.postMessage(["smallfiles", smallFiles]);
+      uploadWorker.postMessage(["smallfiles", smallFiles]);
     }
 
     checkIfWorkersDone();
   } else if (file.size > 1000 * 1000 * 20) {
     postMessage(`BIG${file.size}`);
-    smallFilesWorker.postMessage(["bigfile", file]);
+    uploadWorker.postMessage(["bigfile", file]);
 
-    setTimeout(wrapper, 0, files);
+    setTimeout(distributeToWorker, 0, files);
   } else {
     currentSize += file.size;
     smallFiles.push(file);
@@ -38,26 +46,22 @@ async function wrapper(files) {
       }, FileCount ${files.length}`
     );
     if (currentSize > MAX_REQUEST_SIZE || smallFiles.length > 1000) {
-      smallFilesWorker.postMessage(["smallfiles", smallFiles]);
+      uploadWorker.postMessage(["smallfiles", smallFiles]);
       smallFiles = [];
       currentSize = 0;
     }
 
-    setTimeout(wrapper, 0, files);
+    setTimeout(distributeToWorker, 0, files);
   }
 }
 
 async function checkIfWorkersDone() {
-  smallFilesWorker.postMessage("are you done?");
-  const responseSmallFiles = await new Promise(
-    (resolve) => (smallFilesWorker.onmessage = (e) => resolve(e.data))
-  );
+  uploadWorker.postMessage("are you done?");
 
-  if (responseSmallFiles === "done") {
-    smallFilesWorker.terminate();
+  if (uploadWorkerDone) {
+    uploadWorker.terminate();
     self.close();
   } else {
     setTimeout(checkIfWorkersDone, 20);
-    return;
   }
 }

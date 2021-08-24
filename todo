@@ -5,22 +5,20 @@
 1000 async no-log-view 7min
 
 
-TODO NOW:
-    Test:
-        FormData size and Axios/Fetch
-        BIGFILE 4-20GB
-            probably gotta chunk it
-    Refactor:
-        the whole ting
+PotentialBugs&ExistingBugs:
+    POTENTIAL! postMessage with size from uploader.js is async. It may not
+        have a chance to get sent before worker is closed
+    webkitRelative Path on Chrome
+    the not full backup on chrome(size progress discrepancy)
 
+TODO NOW:
 
 TODO features:
-    Add gui progress bar
-    Add users
-        Initially just folder for users
     Add browsing view
         Add upload at browsed folder
         Add "are you sure want to replace". Requires prefligh
+    Add users
+        Initially just folder for users
     Add download
 
 TODO test:
@@ -29,4 +27,8 @@ TODO test:
 
 Achievments:
     The backup works with big folders with alot of files
-    Runs in Web Worker not the UI is 100% smooth
+    Runs in Web Worker, the UI is 100% smooth
+
+BigHurdles:
+    There is a memory leak on firefox. Its seems to be firefox`s falt, it seems to also
+    happen when uploading file in google drive.

@@ -1,6 +1,8 @@
 import * as Vue from "vue";
 import axios from "axios";
+
 import uploadFiles from "./files.js";
+import { getFilesSize } from "./utils.js";
 
 const Counter = {
   data() {
@@ -31,18 +33,16 @@ const Counter = {
       getFileList(dataTransferItems).then((files) => {
         console.log("Main files", files);
         this.max = getFilesSize(files);
-        uploadFiles(files);
-        // wrapper(files);
+        this.current = 0;
+        uploadFiles(files, this.addSizeUi);
       });
+    },
+
+    addSizeUi(size) {
+      this.current += size;
     },
   },
 };
-
-function getFilesSize(files) {
-  let size = 0;
-  files.forEach((file) => (size += file.size));
-  return size;
-}
 
 async function getFileList(dataTransferItems) {
   const files = [];
@@ -84,7 +84,6 @@ async function traverseFileSystem(list, fileSystemEntry) {
     }
   }
   await Promise.all(promises);
-  // console.log("RETURNED");
 }
 
 Vue.createApp(Counter).mount("#app");

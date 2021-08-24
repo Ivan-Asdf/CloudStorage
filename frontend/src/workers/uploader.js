@@ -1,7 +1,7 @@
 import axios from "axios";
 
-import { getFileName } from "./utils.js";
-import { MAX_REQUEST_SIZE } from "./utils.js";
+import { getFileName, MAX_REQUEST_SIZE } from "./utils.js";
+import { getFilesSize } from "./../utils.js";
 
 self.onmessage = (e) => {
   const msg = e.data;
@@ -18,6 +18,8 @@ self.onmessage = (e) => {
     else if (msg[0] == "bigfile") bigFiles.push(msg[1]);
   }
 };
+
+const msgQueue = [];
 
 const MAX_CONCURRENT_REQUESTS = 6;
 let pendingUploads = 0;
@@ -44,7 +46,7 @@ function work() {
 
 function sendBatch(filesBatch) {
   pendingUploads++;
-  console.log("SENDING BATCH");
+  const batchSize = getFilesSize(filesBatch);
   const formData = new FormData();
   for (const file of filesBatch) {
     formData.append(getFileName(file), file);
@@ -52,14 +54,20 @@ function sendBatch(filesBatch) {
 
   axios
     .post(`http://localhost:6969/upload`, formData)
-    .then(() => pendingUploads--)
+    .then(() => {
+      pendingUploads--;
+      postMessage(batchSize);
+    })
     .catch((e) => console.error(e));
 }
 
 function sendBigFile(file) {
   pendingUploads++;
   sendBySlicing(file)
-    .then((result) => pendingUploads--)
+    .then((result) => {
+      pendingUploads--;
+      postMessage(file.size);
+    })
     .catch((e) => console.error(e));
 }
 

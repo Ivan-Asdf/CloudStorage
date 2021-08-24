@@ -11,9 +11,17 @@
       }
       body {
         background-color: aqua;
+        height: 2000px;
       }
       .hoverover {
         background-color: red;
+      }
+
+      #progress {
+        background-color: cadetblue;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
       }
     </style>
   </head>
@@ -34,8 +42,11 @@
         <option>KO PR</option>
       </select>
       <input />
-      <p>{{current}} of {{max}}</p>
-      <!-- <img class="flip-scale-up-hor" src="frog.jpg" /> -->
+      <div id="progress">
+        <p>{{current}} of {{max}}</p>
+        <label for="file">File progress:</label>
+        <progress id="file" :max="max" :value="current"></progress>
+      </div>
     </div>
   </body>
   <script src="main.js"></script>
