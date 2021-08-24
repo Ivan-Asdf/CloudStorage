@@ -1,4 +1,5 @@
 const webpack = require("webpack");
+const { VueLoaderPlugin } = require("vue-loader");
 
 module.exports = {
   devServer: {
@@ -16,5 +17,14 @@ module.exports = {
       __VUE_OPTIONS_API__: true,
       __VUE_PROD_DEVTOOLS__: false,
     }),
+    new VueLoaderPlugin(),
   ],
+  module: {
+    rules: [
+      {
+        test: /\.vue$/,
+        loader: "vue-loader",
+      },
+    ],
+  },
 };

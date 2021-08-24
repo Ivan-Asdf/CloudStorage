@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "axios": "^0.21.1",
-    "vue": "^3.2.4"
+    "vue": "^3.2.4",
+    "vue-loader": "^16.5.0"
   },
   "name": "frontend",
   "version": "1.0.0",

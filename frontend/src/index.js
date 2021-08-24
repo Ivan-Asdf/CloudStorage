@@ -1,7 +1,7 @@
 import * as Vue from "vue";
 import axios from "axios";
 
-import uploadFiles from "./files.js";
+import { uploadFiles, getFileList } from "./files.js";
 import { getFilesSize } from "./utils.js";
 
 const Counter = {
@@ -54,13 +54,7 @@ const Counter = {
       const fileName = e.target.textContent;
       this.root += "/" + fileName;
       console.log("FILE CLICKED", fileName);
-      axios
-        .get("http://localhost:6969/get" + "/" + fileName)
-        .then((response) => {
-          const data = response.data;
-          this.files = data;
-          console.log(data);
-        });
+      this.refreshBrowsingView();
     },
 
     onBackClicked(e) {
@@ -68,6 +62,10 @@ const Counter = {
       console.log(index);
       this.root = this.root.substring(0, index);
 
+      this.refreshBrowsingView();
+    },
+
+    refreshBrowsingView() {
       axios.get("http://localhost:6969/get" + this.root).then((response) => {
         const data = response.data;
         this.files = data;
@@ -75,48 +73,13 @@ const Counter = {
       });
     },
   },
+  mounted() {
+    this.refreshBrowsingView();
+  },
 };
 
-async function getFileList(dataTransferItems) {
-  const files = [];
-  const promises = [];
-  for (let dataTransferItem of dataTransferItems) {
-    const fileSystemEntry = dataTransferItem.webkitGetAsEntry();
-    promises.push(traverseFileSystem(files, fileSystemEntry));
-  }
-  await Promise.all(promises);
-  return files;
-}
+import test from "./test.vue";
 
-// Returns a list of File objects
-async function traverseFileSystem(list, fileSystemEntry) {
-  const promises = [];
-  if (fileSystemEntry.isFile) {
-    promises.push(
-      new Promise((resolve, reject) => {
-        fileSystemEntry.file(
-          (file) => {
-            list.push(file);
-            resolve();
-          },
-          (err) => console.log(err)
-        );
-      })
-    );
-  } else {
-    let fsDirReader = fileSystemEntry.createReader();
-    const entries = await new Promise((resolve, reject) => {
-      fsDirReader.readEntries(
-        (entries) => resolve(entries),
-        (err) => reject(err)
-      );
-    });
-
-    for (const entry of entries) {
-      promises.push(traverseFileSystem(list, entry));
-    }
-  }
-  await Promise.all(promises);
-}
-
-Vue.createApp(Counter).mount("#app");
+const app = Vue.createApp(Counter);
+app.component("test", test);
+app.mount("#app");
