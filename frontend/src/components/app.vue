@@ -20,26 +20,22 @@
       <p>{{ file.name }}</p>
     </div>
   </div>
-  <div id="progress">
-    <p>{{ current }} of {{ max }}</p>
-    <label for="file">File progress:</label>
-    <progress id="file" :max="max" :value="current"></progress>
-  </div>
   <test></test>
+  <Progress :current="current" :max="max"></Progress>
 </template>
 
 <script>
 import axios from "axios";
 
-import { uploadFiles, getFileList } from "./files.js";
-import { getFilesSize } from "./utils.js";
+import { uploadFiles, getFileList } from "../files.js";
+import { getFilesSize } from "../utils.js";
 
 export default {
   data() {
     return {
       hoverover: false,
-      current: 0,
-      max: 0,
+      current: 1,
+      max: 2,
 
       root: "",
       files: null,
@@ -166,12 +162,5 @@ body {
 }
 .hoverover {
   background-color: red;
-}
-
-#progress {
-  background-color: cadetblue;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
 }
 </style>

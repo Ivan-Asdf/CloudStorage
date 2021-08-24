@@ -12,8 +12,9 @@ PotentialBugs&ExistingBugs:
     the not full backup on chrome(size progress discrepancy)
 
 TODO NOW:
+    Make browse view refrest after upload finishes
+        Make progress disapear after upload finishes
     Standartize the getting size procedure
-    Make browse view refrest after upload
 
 TODO features:
     Add download
@@ -21,9 +22,10 @@ TODO features:
     Add "are you sure want to replace". Requires prefligh
     Add users
         Initially just folder for users
+    Make browsing easier: Make the current dir path clickable on every parent folder
 
 TODO test:
-    validation of data?!?!
+    validation of data uploaded?!?!
 
 
 Achievments:
