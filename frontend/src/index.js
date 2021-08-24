@@ -10,6 +10,9 @@ const Counter = {
       hoverover: false,
       current: 0,
       max: 0,
+
+      root: "",
+      files: null,
     };
   },
   methods: {
@@ -35,11 +38,41 @@ const Counter = {
         this.max = getFilesSize(files);
         this.current = 0;
         uploadFiles(files, this.addSizeUi);
+        axios.get("http://localhost:6969/get").then((response) => {
+          const data = response.data;
+          this.files = data;
+          console.log(data);
+        });
       });
     },
 
     addSizeUi(size) {
       this.current += size;
+    },
+
+    onClick(e) {
+      const fileName = e.target.textContent;
+      this.root += "/" + fileName;
+      console.log("FILE CLICKED", fileName);
+      axios
+        .get("http://localhost:6969/get" + "/" + fileName)
+        .then((response) => {
+          const data = response.data;
+          this.files = data;
+          console.log(data);
+        });
+    },
+
+    onBackClicked(e) {
+      const index = this.root.lastIndexOf("/");
+      console.log(index);
+      this.root = this.root.substring(0, index);
+
+      axios.get("http://localhost:6969/get" + this.root).then((response) => {
+        const data = response.data;
+        this.files = data;
+        console.log(data);
+      });
     },
   },
 };

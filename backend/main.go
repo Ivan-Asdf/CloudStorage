@@ -1,26 +1,19 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"regexp"
-	"time"
+
+	"github.com/gorilla/mux"
 )
 
-type myHandler struct{}
-
-func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func upload(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Request received")
-	// buffer := make([]byte, 1000*1000+100)
-	// for {
-	// 	_, err := r.Body.Read(buffer)
-	// 	if err != nil {
-	// 		break
-	// 	}
-	// }
 
 	reader, _ := r.MultipartReader()
 	for {
@@ -75,35 +68,55 @@ func createDir(path string) {
 	}
 }
 
-// Get filename to write to and also make sure all directories are created.
-// func getFileName(path string) string {
-// 	re := regexp.MustCompile(`/(.+)/([^/]+)`)
-// 	matches := re.FindStringSubmatch(path)
-// 	err := os.MkdirAll(matches[1], 0744)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	return matches[1] + "/" + matches[2]
-// }
-
 func main() {
-	s := http.Server{
-		Addr:           ":6969",
-		Handler:        &myHandler{},
-		ReadTimeout:    5 * time.Minute,
-		WriteTimeout:   5 * time.Minute,
-		MaxHeaderBytes: 1 << 20,
-	}
+	// http.HandleFunc("/upload", upload)
+	// http.HandleFunc("/get/{wildcard}", get)
+	r := mux.NewRouter()
+	r.HandleFunc("/upload", upload)
+	r.HandleFunc("/get", get)
+	r.HandleFunc("/get/{dir:.+}", get)
+	http.Handle("/", r)
 
-	s.ListenAndServe()
+	http.ListenAndServe(":6969", r)
 }
 
 func writeCors(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:9000")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "content-type, content-range, example")
-	_, err := w.Write([]byte("ZDR file uploaded"))
+}
+
+type FileData struct {
+	Type string `json:"type"`
+	Name string `json:"name"`
+}
+
+func get(w http.ResponseWriter, r *http.Request) {
+	// fmt.Println(r.URL.Path)
+
+	vars := mux.Vars(r)
+	file := vars["dir"]
+	// fmt.Println(dir)
+
+	fileInfo, err := ioutil.ReadDir("upload/" + file)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	writeCors(w)
+	filesData := make([]FileData, 0)
+	for _, f := range fileInfo {
+		var fileType string
+		if f.IsDir() {
+			fileType = "dir"
+		} else {
+			fileType = "file"
+		}
+		filesData = append(filesData, FileData{fileType, f.Name()})
+	}
+	bytes, err := json.Marshal(filesData)
+	if err != nil {
+		fmt.Println(err)
+	}
+	w.Write(bytes)
 }
