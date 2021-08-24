@@ -1,67 +1,7 @@
 <html>
-  <head>
-    <style>
-      .droparea {
-        background-color: white;
-        height: 300px;
-        overflow: scroll;
-        display: grid;
-        grid-template-columns: repeat(10, 1fr);
-      }
-
-      .file {
-        height: 100px;
-        width: 100px;
-        background-image: url(text-x-generic.svg);
-        background-size: cover;
-      }
-
-      .dir {
-        height: 100px;
-        width: 100px;
-        background-image: url(folder-blue.svg);
-        background-size: cover;
-      }
-
-      body {
-        background-color: aqua;
-        height: 2000px;
-      }
-      .hoverover {
-        background-color: red;
-      }
-
-      #progress {
-        background-color: cadetblue;
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-      }
-    </style>
-  </head>
+  <head> </head>
   <body>
-    <div id="app">
-      <button @click="onBackClicked">Back</button>
-      <p>Current dir: {{root}}</p>
-      <div
-        class="droparea"
-        v-bind:class="{hoverover: hoverover}"
-        @drop.prevent="drop"
-        @dragenter.prevent="dragEnter"
-        @dragleave.prevent="dragLeave"
-        @dragover.prevent
-      >
-        <div v-for="file in files">
-          <div :class="file.type" @click="onClick">{{file.name}}</div>
-        </div>
-      </div>
-      <div id="progress">
-        <p>{{current}} of {{max}}</p>
-        <label for="file">File progress:</label>
-        <progress id="file" :max="max" :value="current"></progress>
-      </div>
-      <test></test>
-    </div>
+    <div id="app"></div>
   </body>
   <script src="main.js"></script>
 </html>

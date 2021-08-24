@@ -92,11 +92,8 @@ type FileData struct {
 }
 
 func get(w http.ResponseWriter, r *http.Request) {
-	// fmt.Println(r.URL.Path)
-
 	vars := mux.Vars(r)
 	file := vars["dir"]
-	// fmt.Println(dir)
 
 	fileInfo, err := ioutil.ReadDir("upload/" + file)
 	if err != nil {
