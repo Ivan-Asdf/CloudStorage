@@ -1,6 +1,6 @@
 export function uploadFiles(files, sizeCallback) {
   const worker = new Worker(
-    new URL("./workers/distributor.js", import.meta.url)
+    new URL("./workers/upload/distributor.js", import.meta.url)
   );
 
   worker.postMessage(files);

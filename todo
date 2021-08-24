@@ -12,10 +12,9 @@ PotentialBugs&ExistingBugs:
     the not full backup on chrome(size progress discrepancy)
 
 TODO NOW:
-    Add file icons to source control
-    Remove magic text in workers
     Standartize the getting size procedure
     Make text appear bottom of file
+    Make browse view refrest after upload
 
 TODO features:
     Add download

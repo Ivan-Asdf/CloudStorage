@@ -1,25 +1,29 @@
 import axios from "axios";
 
-import { getFileName, MAX_REQUEST_SIZE } from "./utils.js";
-import { getFilesSize } from "./../utils.js";
+import {
+  getFileName,
+  MAX_REQUEST_SIZE,
+  DONE_MSG,
+  WORKING_MSG,
+  SMALL_FILES_BATCH,
+  BIGFILE,
+} from "./utils.js";
+import { getFilesSize } from "./../../utils.js";
 
 self.onmessage = (e) => {
   const msg = e.data;
   if (typeof msg === "string") {
     // They check us if work done
     if (pendingUploads || fileBatches.length || bigFiles.length) {
-      postMessage("working");
+      postMessage(WORKING_MSG);
     } else {
-      postMessage("done");
+      postMessage(DONE_MSG);
     }
   } else {
-    // msg is files
-    if (msg[0] == "smallfiles") fileBatches.push(msg[1]);
-    else if (msg[0] == "bigfile") bigFiles.push(msg[1]);
+    if (msg[0] == SMALL_FILES_BATCH) fileBatches.push(msg[1]);
+    else if (msg[0] == BIGFILE) bigFiles.push(msg[1]);
   }
 };
-
-const msgQueue = [];
 
 const MAX_CONCURRENT_REQUESTS = 6;
 let pendingUploads = 0;
@@ -64,7 +68,7 @@ function sendBatch(filesBatch) {
 function sendBigFile(file) {
   pendingUploads++;
   sendBySlicing(file)
-    .then((result) => {
+    .then(() => {
       pendingUploads--;
       postMessage(file.size);
     })

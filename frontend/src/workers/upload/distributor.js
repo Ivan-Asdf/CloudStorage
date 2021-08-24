@@ -1,8 +1,13 @@
-import { MAX_REQUEST_SIZE } from "./utils.js";
+import {
+  MAX_REQUEST_SIZE,
+  CHECK_IF_DONE_MSG,
+  DONE_MSG,
+  WORKING_MSG,
+  SMALL_FILES_BATCH,
+  BIGFILE,
+} from "./utils.js";
 
 self.addEventListener("message", function (e) {
-  e.preventDefault();
-  e.stopPropagation();
   const files = e.data;
   distributeToWorker(files);
 });
@@ -12,11 +17,9 @@ let uploadWorkerDone = false;
 
 uploadWorker.onmessage = (e) => {
   const msg = e.data;
-  if (msg === "done") uploadWorkerDone = true;
-  else if (msg === "working") {
+  if (msg === DONE_MSG) uploadWorkerDone = true;
+  else if (msg === WORKING_MSG) {
   } else {
-    // console.log(msg);
-    // console.log("distrubuter sent size", { type: "size", size: msg });
     postMessage({ type: "size", size: msg });
   }
 };
@@ -28,13 +31,13 @@ async function distributeToWorker(files) {
   const file = files.pop();
   if (file == undefined) {
     if (currentSize > 0) {
-      uploadWorker.postMessage(["smallfiles", smallFiles]);
+      uploadWorker.postMessage([SMALL_FILES_BATCH, smallFiles]);
     }
 
     checkIfWorkersDone();
   } else if (file.size > 1000 * 1000 * 20) {
     postMessage(`BIG${file.size}`);
-    uploadWorker.postMessage(["bigfile", file]);
+    uploadWorker.postMessage([BIGFILE, file]);
 
     setTimeout(distributeToWorker, 0, files);
   } else {
@@ -46,7 +49,7 @@ async function distributeToWorker(files) {
       }, FileCount ${files.length}`
     );
     if (currentSize > MAX_REQUEST_SIZE || smallFiles.length > 1000) {
-      uploadWorker.postMessage(["smallfiles", smallFiles]);
+      uploadWorker.postMessage([SMALL_FILES_BATCH, smallFiles]);
       smallFiles = [];
       currentSize = 0;
     }
@@ -56,7 +59,7 @@ async function distributeToWorker(files) {
 }
 
 async function checkIfWorkersDone() {
-  uploadWorker.postMessage("are you done?");
+  uploadWorker.postMessage(CHECK_IF_DONE_MSG);
 
   if (uploadWorkerDone) {
     uploadWorker.terminate();
