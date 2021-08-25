@@ -10,6 +10,7 @@ PotentialBugs&ExistingBugs:
         have a chance to get sent before worker is closed
     webkitRelative Path on Chrome
     the not full backup on chrome(size progress discrepancy)
+    some folders inside .git dont get uploaded
 
 TODO NOW:
     Make browse view refrest after upload finishes
@@ -25,7 +26,7 @@ TODO features:
     Make browsing easier: Make the current dir path clickable on every parent folder
 
 TODO test:
-    validation of data uploaded?!?!
+    make sure that firefox leak is firefox`s fault
 
 
 Achievments:
@@ -35,3 +36,6 @@ Achievments:
 BigHurdles:
     There is a memory leak on firefox. Its seems to be firefox`s falt, it seems to also
         happen when uploading file in google drive.
+
+Notes:
+    symbolic links CONTENT is uploaded

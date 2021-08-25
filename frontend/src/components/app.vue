@@ -15,12 +15,12 @@
       :key="file.name"
       :filename="file.name"
       @click.stop="onClick"
+      @contextmenu.prevent="onRightClick"
     >
       <div :class="file.type"></div>
       <p>{{ file.name }}</p>
     </div>
   </div>
-  <test></test>
   <Progress :current="current" :max="max"></Progress>
 </template>
 
@@ -90,8 +90,28 @@ export default {
       this.refreshBrowsingView();
     },
 
+    onRightClick(e) {
+      const fileName = e.currentTarget.getAttribute("filename");
+      const filePath = this.root + "/" + fileName;
+      console.log("DOWNLOAD", filePath);
+      axios
+        .get("http://localhost:6969/download" + filePath, {
+          responseType: "blob",
+        })
+        .then((response) => {
+          const url = window.URL.createObjectURL(response.data);
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", fileName);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(url);
+        });
+    },
+
     refreshBrowsingView() {
       axios.get("http://localhost:6969/get" + this.root).then((response) => {
+        const url = window.ULR;
         const data = response.data;
         this.files = data;
         console.log(data);
