@@ -27,8 +27,8 @@
 <script>
 import axios from "axios";
 
-import { uploadFiles, getFileList } from "../files.js";
-import { getFilesSize } from "../utils.js";
+import { uploadFiles, getFileList } from "./files.js";
+import { getFilesSize } from "./utils.js";
 
 export default {
   data() {

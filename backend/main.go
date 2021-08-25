@@ -1,14 +1,17 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
+
 func main() {
-	// http.HandleFunc("/upload", upload)
-	// http.HandleFunc("/get/{wildcard}", get)
 	r := mux.NewRouter()
 	r.HandleFunc("/upload", upload)
 	r.HandleFunc("/get", get)
@@ -17,5 +20,8 @@ func main() {
 	r.HandleFunc("/download/{filepath:.+}", download)
 	http.Handle("/", r)
 
-	http.ListenAndServe(":6969", r)
+	err := http.ListenAndServe(":6969", r)
+	if err != nil {
+		log.Printf("Cant start server: %+v", err)
+	}
 }

@@ -1,21 +1,18 @@
 package main
 
 import (
-	"archive/zip"
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
-	"regexp"
 
 	"github.com/gorilla/mux"
 )
 
 func upload(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Request received")
+	log.Println("Request received")
 
 	reader, _ := r.MultipartReader()
 	for {
@@ -24,21 +21,25 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			if err == io.EOF {
 				break
 			} else {
-				fmt.Println("ERROR NextPart", err)
+				log.Println(err)
+				w.WriteHeader(http.StatusBadRequest)
 				break
 			}
 		}
 
 		fileName := part.FormName()
-		createDir(fileName)
+		createNecessaryDirs(fileName)
 
 		bytes, err := ioutil.ReadAll(part)
+		if err != nil {
+			log.Println(err)
+		}
 		part.Close()
 		writeFile("upload/"+fileName, bytes)
 	}
 
-	writeCors(w)
-	fmt.Println("Request proccesses")
+	writeCorsHeaders(w)
+	log.Println("Request proccesses")
 }
 
 type FileData struct {
@@ -52,10 +53,12 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 	fileInfo, err := ioutil.ReadDir("upload/" + file)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
 
-	writeCors(w)
+	writeCorsHeaders(w)
 	filesData := make([]FileData, 0)
 	for _, f := range fileInfo {
 		var fileType string
@@ -68,85 +71,57 @@ func get(w http.ResponseWriter, r *http.Request) {
 	}
 	bytes, err := json.Marshal(filesData)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		return
 	}
-	w.Write(bytes)
+	_, err = w.Write(bytes)
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func download(w http.ResponseWriter, r *http.Request) {
-	writeCors(w)
+	writeCorsHeaders(w)
 	vars := mux.Vars(r)
 	filePath := vars["filepath"]
-	fileHandle, err := os.Open("upload/" + filePath)
+	fullPath := "upload/" + filePath
+	fileHandle, err := os.Open(fullPath)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
 
 	fileInfo, err := fileHandle.Stat()
 	if err != nil {
-		fmt.Println(err)
-	}
-	if fileInfo.IsDir() {
-		buf := new(bytes.Buffer)
-		zipWriter := zip.NewWriter(buf)
-
-		fullPath := "upload/" + filePath
-		dir, name := getDir(fullPath)
-		fmt.Println("SPLIT", dir, name)
-		zipFolder(zipWriter, name, dir)
-		zipWriter.Close()
-		w.Write(buf.Bytes())
-
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	bytes, err := ioutil.ReadAll(fileHandle)
-	if err != nil {
-		fmt.Println(err)
-	}
-	_, err = w.Write(bytes)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
-func getDir(path string) (dir, name string) {
-	re := regexp.MustCompile(`(.+/)([^/]+)`)
-	matches := re.FindStringSubmatch(path)
-	return matches[1], matches[2]
-}
-
-func zipFolder(w *zip.Writer, folderPath string, basePath string) {
-	folderFilesInfo, err := ioutil.ReadDir(basePath + folderPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	for _, fileInfo := range folderFilesInfo {
-		fileName := folderPath + "/" + fileInfo.Name()
-		if !fileInfo.IsDir() {
-			fmt.Println("WRITING", fileName)
-			fileHandle, err := os.Open(basePath + fileName)
-			if err != nil {
-				fmt.Println(err)
-			}
-			bytes, err := ioutil.ReadAll(fileHandle)
-			if err != nil {
-				fmt.Println(err)
-			}
-			addFileToZip(w, fileName, bytes)
-		} else {
-			zipFolder(w, fileName, basePath)
+	if fileInfo.IsDir() {
+		bytes, err := zipFolder(fullPath)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
-	}
-}
-
-func addFileToZip(w *zip.Writer, filePath string, fileData []byte) {
-	f, err := w.Create(filePath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	_, err = f.Write(fileData)
-	if err != nil {
-		fmt.Println(err)
+		_, err = w.Write(bytes)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	} else {
+		bytes, err := ioutil.ReadAll(fileHandle)
+		if err != nil {
+			log.Println(err)
+		}
+		bytesWritten, err := w.Write(bytes)
+		if err != nil {
+			log.Println(err)
+		} else if bytesWritten != len(bytes) {
+			log.Printf("Not all bytes written to file expected: %d written: %d\n", len(bytes), bytesWritten)
+		}
 	}
 }
