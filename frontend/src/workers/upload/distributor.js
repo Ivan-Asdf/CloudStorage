@@ -63,6 +63,7 @@ async function checkIfWorkersDone() {
 
   if (uploadWorkerDone) {
     uploadWorker.terminate();
+    self.postMessage(DONE_MSG);
     self.close();
   } else {
     setTimeout(checkIfWorkersDone, 20);

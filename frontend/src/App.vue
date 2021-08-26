@@ -82,8 +82,9 @@ export default {
         console.log("Main files", files);
         this.max = getFilesSize(files);
         this.current = 0;
-        uploadFiles(files, this.addSizeUi);
-        this.refreshBrowsingView();
+        uploadFiles(files, this.addSizeUi).then(() => {
+          this.refreshBrowsingView();
+        });
       });
     },
 

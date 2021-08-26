@@ -1,18 +1,24 @@
+import { DONE_MSG } from "./workers/upload/utils.js";
+
 export function uploadFiles(files, sizeCallback) {
   const worker = new Worker(
     new URL("./workers/upload/distributor.js", import.meta.url)
   );
 
   worker.postMessage(files);
-  worker.onmessage = (e) => {
-    const msg = e.data;
-    if (typeof msg === "object") {
-      // console.log("files.js", msg);
-      sizeCallback(msg["size"]);
-      // console.log("size recieved", msg["size"]);
-    } else {
-    }
-  };
+
+  return new Promise((resolve) => {
+    worker.onmessage = (e) => {
+      const msg = e.data;
+      if (typeof msg === "object") {
+        sizeCallback(msg["size"]);
+      } else {
+        if (msg === DONE_MSG) {
+          resolve();
+        }
+      }
+    };
+  });
 }
 
 export async function getFileList(dataTransferItems) {

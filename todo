@@ -13,17 +13,18 @@ PotentialBugs&ExistingBugs:
     some folders inside .git dont get uploaded
 
 TODO NOW:
-    Make browse view refrest after upload finishes
-        Make progress disapear after upload finishes
+    Make progress disapear after upload finishes
+        But after you test the not reaching max size bug
     Standartize the getting size procedure
 
 TODO features:
     Add delete right click context menu
+    Make browsing easier: Make the current dir path clickable on every parent folder
     Add upload at browsed folder
     Add "are you sure want to replace". Requires prefligh
     Add users
         Initially just folder for users
-    Make browsing easier: Make the current dir path clickable on every parent folder
+    Sort by first showing dirs
 
 TODO test:
     make sure that firefox leak is firefox`s fault

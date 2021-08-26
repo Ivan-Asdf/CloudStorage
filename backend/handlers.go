@@ -48,6 +48,7 @@ type FileData struct {
 }
 
 func get(w http.ResponseWriter, r *http.Request) {
+	writeCorsHeaders(w)
 	vars := mux.Vars(r)
 	file := vars["filepath"]
 
@@ -58,7 +59,6 @@ func get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeCorsHeaders(w)
 	filesData := make([]FileData, 0)
 	for _, f := range fileInfo {
 		var fileType string
