@@ -122,8 +122,15 @@ export default {
         .get("http://localhost:6969/get" + this.currentDir)
         .then((response) => {
           const data = response.data;
+          // Sort directories first
+          data.sort((first, second) => {
+            const firstIsDir = first.type == "dir";
+            const secondIsDir = second.type == "dir";
+            if (firstIsDir && !secondIsDir) return -1;
+            else if (secondIsDir && !firstIsDir) return 1;
+            else return first.name.localeCompare(second.name);
+          });
           this.files = data;
-          // console.log(data);
         });
     },
   },

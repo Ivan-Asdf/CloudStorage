@@ -11,10 +11,10 @@ PotentialBugs&ExistingBugs:
     some folders inside .git dont get uploaded
 
 TODO features:
+    Add select multiple
     Add "are you sure want to replace". Requires prefligh
     Add users
         Initially just folder for users
-    Sort by first showing dirs
 
 Achievments:
     The backup works with big folders with alot of files
