@@ -29,6 +29,7 @@
     :y="rightClickY"
     :currentDir="currentDir"
     :clickedFile="clickedFile"
+    @fileDeleted="refreshBrowsingView"
   />
 </template>
 

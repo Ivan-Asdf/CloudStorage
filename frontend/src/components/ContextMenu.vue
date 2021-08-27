@@ -36,7 +36,11 @@ export default {
     },
 
     onDelete() {
-      console.log("onDelete");
+      const filePath =
+        this.$props.currentDir + "/" + this.$props.clickedFile.name;
+      axios
+        .get("http://localhost:6969/delete" + filePath)
+        .then(() => this.$emit("fileDeleted"));
     },
   },
 };

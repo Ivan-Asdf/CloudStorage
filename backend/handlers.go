@@ -130,3 +130,53 @@ func download(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func delete(w http.ResponseWriter, r *http.Request) {
+	writeCorsHeaders(w)
+	vars := mux.Vars(r)
+	filePath := vars["filepath"]
+
+	fullPath := "upload/" + filePath
+	log.Println("Deleting folder", fullPath)
+	err := os.RemoveAll(fullPath)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	// err := doOpOnDir(filePath, "upload/", deleteFile)
+	// if err != nil {
+	// 	log.Println("ERR", err)
+	// }
+}
+
+// func deleteFile(relativePath string, basePath string) error {
+// 	fullPath := basePath + relativePath
+// 	log.Println("Deleting file", fullPath)
+// 	err := os.Remove(fullPath)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
+
+// func doOpOnDir(relativePath string, basePath string, op func(string, string) error) error {
+// 	folderFilesInfo, err := ioutil.ReadDir(basePath + relativePath)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	for _, fileInfo := range folderFilesInfo {
+// 		fileRelativePath := relativePath + "/" + fileInfo.Name()
+// 		if !fileInfo.IsDir() {
+// 			err := op(fileRelativePath, basePath)
+// 			if err != nil {
+// 				return err
+// 			}
+// 		} else {
+// 			err := doOpOnDir(fileRelativePath, basePath, op)
+// 			if err != nil {
+// 				return err
+// 			}
+// 		}
+// 	}
+// 	return nil
+// }
