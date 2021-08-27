@@ -44,7 +44,7 @@ async function distributeToWorker(files) {
     currentSize += file.size;
     smallFiles.push(file);
     postMessage(
-      `Add, ${file.name}, ${file.size}, Current, ${
+      `Add, ${file.path}, ${file.size}, Current, ${
         currentSize / 1000000.0
       }, FileCount ${files.length}`
     );

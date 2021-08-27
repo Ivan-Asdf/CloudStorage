@@ -80,8 +80,8 @@ export default {
       const dataTransferItems = e.dataTransfer.items;
       getFileList(dataTransferItems).then((files) => {
         console.log("Main files", files);
-        this.max = getFilesSize(files);
-        this.current = 0;
+        this.maxProgress = getFilesSize(files);
+        this.currentProgress = 0;
         uploadFiles(files, this.addSizeUi).then(() => {
           this.refreshBrowsingView();
         });
@@ -89,7 +89,7 @@ export default {
     },
 
     addSizeUi(size) {
-      this.current += size;
+      this.currentProgress += size;
     },
 
     onClick(e) {
@@ -124,7 +124,7 @@ export default {
         .then((response) => {
           const data = response.data;
           this.files = data;
-          console.log(data);
+          // console.log(data);
         });
     },
   },

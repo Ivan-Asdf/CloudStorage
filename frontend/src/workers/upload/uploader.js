@@ -1,7 +1,6 @@
 import axios from "axios";
 
 import {
-  getFileName,
   MAX_REQUEST_SIZE,
   DONE_MSG,
   WORKING_MSG,
@@ -53,7 +52,7 @@ function sendBatch(filesBatch) {
   const batchSize = getFilesSize(filesBatch);
   const formData = new FormData();
   for (const file of filesBatch) {
-    formData.append(getFileName(file), file);
+    formData.append(file.path, file.self);
   }
 
   axios
@@ -76,11 +75,10 @@ function sendBigFile(file) {
 }
 
 async function sendBySlicing(file) {
-  const fileName = getFileName(file);
   for (let start = 0; start < file.size; start += MAX_REQUEST_SIZE) {
-    const slice = file.slice(start, start + MAX_REQUEST_SIZE);
+    const slice = file.self.slice(start, start + MAX_REQUEST_SIZE);
     const formData = new FormData();
-    formData.append(fileName, slice);
+    formData.append(file.path, slice);
     await axios.post(`http://localhost:6969/upload`, formData);
   }
 }

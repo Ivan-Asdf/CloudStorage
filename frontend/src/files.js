@@ -37,10 +37,15 @@ async function traverseFileSystem(list, fileSystemEntry) {
   const promises = [];
   if (fileSystemEntry.isFile) {
     promises.push(
-      new Promise((resolve, reject) => {
+      new Promise((resolve) => {
         fileSystemEntry.file(
           (file) => {
-            list.push(file);
+            // Wrap file
+            list.push({
+              self: file,
+              path: fileSystemEntry.fullPath,
+              size: file.size,
+            });
             resolve();
           },
           (err) => console.log(err)

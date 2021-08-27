@@ -15,7 +15,6 @@ PotentialBugs&ExistingBugs:
 TODO NOW:
     Make progress disapear after upload finishes
         But after you test the not reaching max size bug
-    Standartize the getting size procedure
 
 TODO features:
     Add delete right click context menu
