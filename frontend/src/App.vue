@@ -85,10 +85,7 @@ export default {
       // Get dropped folder file tree
       const dataTransferItems = e.dataTransfer.items;
       getFileList(dataTransferItems).then((files) => {
-        console.log("File count:", files.length);
-        // files.forEach(file => {
-        //   console.log(file.path)
-        // });
+        files.forEach((file) => (file.path = this.currentDir + file.path));
         console.log("Main files", files);
         this.maxProgress = getFilesSize(files);
         this.currentProgress = 0;
