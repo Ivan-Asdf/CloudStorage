@@ -1,6 +1,8 @@
 <template>
-  <button @click="onBackClicked">Back</button>
-  <p>Current dir: {{ currentDir }}</p>
+  <PathBrowser
+    :currentDir="currentDir"
+    @currentPathChanged="currentDir = $event"
+  />
   <div
     class="droparea"
     v-bind:class="{ hoverover: hoverover }"
@@ -22,7 +24,7 @@
       <p>{{ file.name }}</p>
     </div>
   </div>
-  <ProgressBar :current="currentProgress" :max="maxProgress"></ProgressBar>
+  <ProgressBar :current="currentProgress" :max="maxProgress" />
   <ContextMenu
     :visible="contextMenuVisible"
     :x="rightClickX"
@@ -41,11 +43,13 @@ import { getFilesSize } from "./utils.js";
 
 import ProgressBar from "./components/ProgressBar.vue";
 import ContextMenu from "./components/ContextMenu.vue";
+import PathBrowser from "./components/PathBrowser.vue";
 
 export default {
   components: {
     ProgressBar: ProgressBar,
     ContextMenu: ContextMenu,
+    PathBrowser: PathBrowser,
   },
   data() {
     return {
@@ -103,15 +107,7 @@ export default {
       const fileType = e.currentTarget.getAttribute("filetype");
       if (fileType === "dir") {
         this.currentDir += "/" + fileName;
-        this.refreshBrowsingView();
       }
-    },
-
-    onBackClicked() {
-      const index = this.currentDir.lastIndexOf("/");
-      this.currentDir = this.currentDir.substring(0, index);
-
-      this.refreshBrowsingView();
     },
 
     onRightClick(e) {
@@ -134,6 +130,11 @@ export default {
         });
     },
   },
+  watch: {
+    currentDir: function () {
+      this.refreshBrowsingView();
+    },
+  },
   mounted() {
     this.refreshBrowsingView();
     window.addEventListener("click", () => {
@@ -151,7 +152,7 @@ body {
 .droparea {
   background-color: white;
   height: 300px;
-  overflow: scroll;
+  overflow: auto;
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   border: 3px solid;
@@ -193,7 +194,7 @@ body {
 }
 
 body {
-  background-color: aqua;
+  background-color: rgb(236, 235, 235);
   height: 2000px;
 }
 .hoverover {
