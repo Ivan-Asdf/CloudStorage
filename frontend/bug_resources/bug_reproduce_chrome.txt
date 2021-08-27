@@ -1,0 +1,21 @@
+The https://developer.mozilla.org/en-US/docs/Web/API/FileSystem
+seems to be buggy
+
+Certain folders are not found by Directory Reader
+https://developer.mozilla.org/en-US/docs/Web/API/FileSystemDirectoryReader
+In Project: traverseFileSystem function
+
+There is a screenshot in this directory showing how upon uploading folder "github.com"
+certain folders are not detected therefore their files inside are not uploaded.
+
+Folder "github.com" is also in this directory zipped
+
+SOLUTION:
+If using Chrome, another api must be used for file system traversing
+The FileSystemAccessApi
+https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API
+
+It is only supported on Chrome, Edge, Opera. NOT on Firefox
+
+https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem
+DataTransferItem.getAsFileSystemHandle()

@@ -1,5 +1,5 @@
 <template>
-  <div id="progress">
+  <div id="progress" v-if="visible">
     <p>{{ current }} of {{ max }}</p>
     <label for="file">File progress:</label>
     <progress id="file" :max="max" :value="current"></progress>
@@ -9,6 +9,12 @@
 <script>
 export default {
   props: ["current", "max"],
+  computed: {
+    visible: function () {
+      if (this.$props.current === this.$props.max) return false;
+      else return true;
+    },
+  },
 };
 </script>
 

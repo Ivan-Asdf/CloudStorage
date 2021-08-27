@@ -49,8 +49,9 @@ export default {
   data() {
     return {
       hoverover: false,
-      currentProgress: 1,
-      maxProgress: 2,
+
+      currentProgress: 0,
+      maxProgress: 0,
 
       currentDir: "",
       files: null,
@@ -79,6 +80,10 @@ export default {
       // Get dropped folder file tree
       const dataTransferItems = e.dataTransfer.items;
       getFileList(dataTransferItems).then((files) => {
+        console.log("File count:", files.length);
+        // files.forEach(file => {
+        //   console.log(file.path)
+        // });
         console.log("Main files", files);
         this.maxProgress = getFilesSize(files);
         this.currentProgress = 0;

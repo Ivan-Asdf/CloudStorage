@@ -6,15 +6,9 @@
 
 
 PotentialBugs&ExistingBugs:
-    POTENTIAL! postMessage with size from uploader.js is async. It may not
-        have a chance to get sent before worker is closed
-    webkitRelative Path on Chrome
+    File and Directory Entries API is buggy on Chrome
     the not full backup on chrome(size progress discrepancy)
     some folders inside .git dont get uploaded
-
-TODO NOW:
-    Make progress disapear after upload finishes
-        But after you test the not reaching max size bug
 
 TODO features:
     Add delete right click context menu
@@ -25,10 +19,6 @@ TODO features:
         Initially just folder for users
     Sort by first showing dirs
 
-TODO test:
-    make sure that firefox leak is firefox`s fault
-
-
 Achievments:
     The backup works with big folders with alot of files
     Runs in Web Worker, the UI is 100% smooth
@@ -38,4 +28,6 @@ BigHurdles:
         happen when uploading file in google drive.
 
 Notes:
-    symbolic links CONTENT is uploaded
+    empty folders are not uploaded
+    Firefox(checked only there):   
+        symbolic links CONTENT is uploaded

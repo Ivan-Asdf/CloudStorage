@@ -21,7 +21,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			if err == io.EOF {
 				break
 			} else {
-				log.Println(err)
+				log.Println("ERR", err)
 				w.WriteHeader(http.StatusBadRequest)
 				break
 			}
@@ -35,7 +35,12 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		part.Close()
-		writeFile("upload/"+fileName, bytes)
+		err = writeFile("upload"+fileName, bytes)
+		if err != nil {
+			log.Println("ERR", err)
+			w.WriteHeader(http.StatusBadRequest)
+			break
+		}
 	}
 
 	writeCorsHeaders(w)
